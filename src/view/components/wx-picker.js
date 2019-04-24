@@ -61,9 +61,14 @@ export default window.exparser.registerElement({
     this.__formCallback = void 0
   },
   showPickerView: function () {
-    this.mode == 'date' || this.mode == 'time'
+    if(this.mode == 'multiSelector'){
+      this.showMultiPickerView()
+    }else{
+      this.mode == 'date' || this.mode == 'time'
       ? this.showDatePickerView()
       : this.mode === 'selector' && this.showSelector()
+    }
+
   },
   getCustomerStyle: function () {
     var customerStyle = this.$.wrapper.getBoundingClientRect()
@@ -134,6 +139,34 @@ export default window.exparser.registerElement({
               _this.triggerEvent('change', {
                 value: _this.value
               }))
+          _this.resetPickerState()
+          _this.formGetDataCallback()
+        }
+      )
+      this.__pickerShow = !0
+    }
+  },
+  showMultiPickerView: function () {
+    var _this = this
+    if (!this.disabled) {
+      WeixinJSBridge.invoke(
+        'showDatePickerView',
+        {
+          range: this.range,
+          mode: this.mode,
+          current: this.value,
+          fields: this.fields,
+          style: this.getCustomerStyle()
+        },
+        function (t) {
+          console.log('showDatePickerView',t);
+          ;/:columnselect/.test(t.errMsg) &&_this.triggerEvent('columnchange', t.value)
+          ;/:ok/.test(t.errMsg) &&
+          ((_this.value = t.value),
+            _this.triggerEvent('change', {
+              value: _this.value
+            }))
+
           _this.resetPickerState()
           _this.formGetDataCallback()
         }

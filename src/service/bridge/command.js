@@ -10,6 +10,7 @@ import storage from '../lib/sdk/storage'
 import Picker from '../lib/sdk/picker'
 import TimePicker from '../lib/sdk/timePicker'
 import DatePicker from '../lib/sdk/datePicker'
+import MultiPicker from '../lib/sdk/multiPicker'
 import * as fileList from '../lib/sdk/fileList'
 import toast from '../lib/sdk/toast'
 import image from '../lib/sdk/image'
@@ -828,8 +829,10 @@ export function showDatePickerView (args) {
   let picker
   if (args.mode == 'time') {
     picker = new TimePicker(args)
-  } else {
+  } else if(args.mode=='data'){
     picker = new DatePicker(args)
+  }else if(args.mode=='multiSelector'){
+    picker = new MultiPicker(args)
   }
 
   picker.show()
@@ -839,4 +842,14 @@ export function showDatePickerView (args) {
       value: val
     })
   })
+
+  picker.on('columnselect', val => {
+    console.log('columnselect',val);
+    WeixinJSBridge.subscribeHandler('showDatePickerView', {
+      errMsg: 'showDatePickerView:columnselect',
+      value: val
+    })
+
+  })
+
 }
